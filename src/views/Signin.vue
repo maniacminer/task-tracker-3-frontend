@@ -5,7 +5,7 @@
         <v-layout align-center justify-center>
           <v-flex xs12 sm8 md4 >
             <v-card min-width="450px" class="elevation-3">
-              <v-toolbar color="grey lighten-3">
+              <v-toolbar color="secondary">
                 <v-toolbar-title class="font-weight-light">Вход</v-toolbar-title>
                 <!-- <v-spacer></v-spacer> -->
               </v-toolbar>
@@ -17,7 +17,7 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="grey lighten-3" @click="login">Войти</v-btn>
+                <v-btn @click="login">Войти</v-btn>
               </v-card-actions>
             </v-card>
           </v-flex>
@@ -54,5 +54,5 @@ export default {
 </script>
 
 <style>
-
 </style>
+

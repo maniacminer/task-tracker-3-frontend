@@ -48,7 +48,7 @@
       </v-list>
     </v-navigation-drawer>
     <v-toolbar
-      color="grey lighten-3"
+      color="secondary"
       fixed
       app
       clipped-right >
@@ -156,3 +156,4 @@
     }
   }
 </script>
+
