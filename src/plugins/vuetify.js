@@ -9,6 +9,6 @@ Vue.use(Vuetify, {
     // primaryText: '#eeeeee', // grey lighten-3
     secondary: '#F5F5F5',
     // accent: '#8c9eff',
-    // error: '#b71c1c'
+    error: '#EF5350'
   }  
 })

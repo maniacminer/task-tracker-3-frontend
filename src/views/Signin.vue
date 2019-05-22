@@ -11,8 +11,13 @@
               </v-toolbar>
               <v-card-text>
                 <v-form>
-                  <v-text-field v-model="email" prepend-icon="email" name="login" label="E-mail" type="email"></v-text-field>
-                  <v-text-field v-model="password" prepend-icon="lock" name="password" label="Пароль" id="password" type="password"></v-text-field>
+                  <v-text-field v-model="email" prepend-icon="email" name="login" 
+                      label="E-mail" type="email"></v-text-field>
+                  <v-text-field v-model="password" prepend-icon="lock" name="password" 
+                      label="Пароль" id="password" type="password"></v-text-field>
+                  <v-alert :value="error" type="error" class="" outline>
+                      {{ error_msg }}
+                  </v-alert>                  
                 </v-form>
               </v-card-text>
               <v-card-actions>
@@ -31,7 +36,9 @@ export default {
     data() {
         return {
             email: '',
-            password: ''
+            password: '',
+            error_msg: '',
+            error: false
         }
     },
     methods: {
@@ -44,8 +51,10 @@ export default {
                     vm.$router.push({name: 'home'})
                 })
                 .catch(err => {
-                    console.log(err)
-                    // console.error(err)
+                    this.error_msg = err.message
+                    this.error = true
+                    // console.log(err)
+                    console.error(err)
                 });            
         }
     }
