@@ -8,7 +8,7 @@
       app >
       <v-list dense>
         <!-- <v-list-tile @click.stop=""> -->
-        <v-list-tile :to="{name: 'signin'}" v-if="!signIn">
+        <v-list-tile :to="{name: 'signin'}" v-if="!isAuthentificated">
           <v-list-tile-action>
             <v-icon>email</v-icon>
           </v-list-tile-action>
@@ -17,7 +17,7 @@
           </v-list-tile-content>
         </v-list-tile>
 
-        <v-list-tile :to="{name: 'signup'}" v-if="!signIn">
+        <v-list-tile :to="{name: 'signup'}" v-if="!isAuthentificated">
           <v-list-tile-action>
             <v-icon>how_to_reg</v-icon>
           </v-list-tile-action>
@@ -27,7 +27,7 @@
         </v-list-tile>
 
 
-        <v-list-tile :to="{name: 'profile'}" v-if="signIn">
+        <v-list-tile :to="{name: 'profile'}" v-if="isAuthentificated">
           <v-list-tile-action>
             <v-icon>person</v-icon>
           </v-list-tile-action>
@@ -39,7 +39,7 @@
         <v-subheader inset></v-subheader>
         <v-divider inset></v-divider>
 
-        <v-dialog v-model="exitDialog" width="500px" v-if="signIn">
+        <v-dialog v-model="exitDialog" width="500px" v-if="isAuthentificated">
           <template v-slot:activator="{ on }">
             <v-list-tile v-on="on" >
               <v-list-tile-action>
@@ -74,8 +74,8 @@
       <v-spacer></v-spacer>
       <v-btn  flat @click.stop="drawerUser = !drawerUser">
         <v-icon left >account_circle</v-icon>
-        <span v-if="!signIn" class="grey--text text--darken-2">Вход / Регистрация</span>
-        <span v-if="signIn" class="grey--text text--darken-2"> {{ displayName }}</span>
+        <span v-if="!isAuthentificated" class="grey--text text--darken-2">Вход / Регистрация</span>
+        <span v-if="isAuthentificated" class="grey--text text--darken-2"> {{ displayName }}</span>
         </v-btn>
     </v-toolbar>
     <v-navigation-drawer
@@ -120,14 +120,14 @@
 </template>
 
 <script>
+  import { mapGetters } from 'vuex'
+
   export default {
     data: () => ({
       drawer: true,
       exitDialog: false,
       drawerUser: false,
       left: false,
-      signIn: false,
-      displayName: '',
       leftMenu: [
         {
           icon: 'home',
@@ -147,26 +147,21 @@
       source: String
     },
     created() {
-      const vm = this;
-
-      this.$auth.onAuthStateChanged(function(user) {
-        if (user) {
-          vm.signIn = true;
-          vm.displayName = user.email;
-        } else {
-            vm.signIn = false;
-            vm.displayName = '';
-
-        }
-      });    
+   
     },
     methods: {
       signout() {
-        this.$auth.signOut()
-        this.exitDialog = false;
-        this.$router.push({name: 'signin'})
-
+        this.$store.dispatch('signOut', {callBack: () => {
+          this.exitDialog = false;
+          this.$router.push({name: 'signin'})
+        }})
       }
+    },
+    computed: { 
+      ...mapGetters([
+        'displayName',
+        'isAuthentificated'
+      ])
     }
   }
 </script>

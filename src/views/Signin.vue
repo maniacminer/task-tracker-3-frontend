@@ -43,19 +43,20 @@ export default {
     },
     methods: {
         login() {
-            const vm = this;
-            const promise = this.$auth.signInWithEmailAndPassword(this.email, this.password)
-            
-            promise
-                .then((user) => {
-                    vm.$router.push({name: 'home'})
-                })
-                .catch(err => {
-                    this.error_msg = err.message
-                    this.error = true
-                    // console.log(err)
-                    console.error(err)
-                });            
+          const vm = this;
+
+          this.$store.dispatch('signIn',
+            {login: this.email,
+             pass: this.password, 
+             callBack: (err) => {
+               if (!err) {
+                 this.$router.push({name: 'home'})
+               } else {
+                 vm.error_msg = err.message
+                 vm.error = true;
+               }
+             } 
+          })
         }
     }
 
