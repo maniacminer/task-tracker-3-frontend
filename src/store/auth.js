@@ -12,7 +12,7 @@ const getters = {
         }
       },
       isAuthentificated: state => {
-        return state.user!=null      
+        return state.user!==null      
       }    
 }
 

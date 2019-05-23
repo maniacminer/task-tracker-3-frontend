@@ -8,34 +8,17 @@
       app >
       <v-list dense>
         <!-- <v-list-tile @click.stop=""> -->
-        <v-list-tile :to="{name: 'signin'}" v-if="!isAuthentificated">
+        <v-list-tile v-for="nav in authMenu" :to="{name: nav.to}" v-bind:key="nav.to" exact>
           <v-list-tile-action>
-            <v-icon>email</v-icon>
+            <v-icon >{{nav.icon}}</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
-            <v-list-tile-title >Вход</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-
-        <v-list-tile :to="{name: 'signup'}" v-if="!isAuthentificated">
-          <v-list-tile-action>
-            <v-icon>how_to_reg</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title >Регистрация</v-list-tile-title>
+            <v-list-tile-title>{{nav.title}}</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
 
 
-        <v-list-tile :to="{name: 'profile'}" v-if="isAuthentificated">
-          <v-list-tile-action>
-            <v-icon>person</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Мой профиль</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-
+        <!-- exit dialog -->
         <v-subheader inset></v-subheader>
         <v-divider inset></v-divider>
 
@@ -128,19 +111,7 @@
       exitDialog: false,
       drawerUser: false,
       left: false,
-      leftMenu: [
-        {
-          icon: 'home',
-          title: 'На главную',
-          to: 'home'
-        },
-        {
-          icon: 'info',
-          title: 'Информация',
-          to: 'about'
-        }
 
-      ],
  
     }),
     props: {
@@ -161,7 +132,13 @@
       ...mapGetters([
         'displayName',
         'isAuthentificated'
-      ])
+      ]),
+      leftMenu() {
+        return this.$store.getters.navigationBar
+      },
+      authMenu() {
+        return this.$store.getters.authBar
+      }
     }
   }
 </script>
