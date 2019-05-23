@@ -20,9 +20,6 @@ const actions = {
         commit('db', db)
     },
     saveTask: ({ state }, params) => {
-        console.log('task save ..')
-        // console.log(state);
-        // console.info(task);
         const task = params.task
         const dbTask = {
             id: task.id,
@@ -33,12 +30,14 @@ const actions = {
             description: task.description,
             createDate: task.createDate,
         }
-
+        
         let promise = null
-
+        
         if (!task.id) {
+            console.log('new task save ...')
             promise = state.$db.collection('task').add(dbTask)
         } else {
+            console.log('updating task ...')
             // all fields, include not changed TODO: fix
             promise = state.$db.collection('task').doc(task.id).update(dbTask)
         }

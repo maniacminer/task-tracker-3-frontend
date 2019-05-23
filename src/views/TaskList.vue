@@ -42,7 +42,9 @@ export default {
     },
     created() {
         this.$store.dispatch('getTaskList', err => {
-            console.error(err)
+            if (err){
+                console.error(err)
+            }
             this.loading = false
         })
     },
