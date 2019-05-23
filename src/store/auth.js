@@ -20,9 +20,9 @@ const mutations = {
     user: (state, user) => {
         state.user = user
       },
-      auth: (state, auth) => {
-        state.$auth = auth
-      }    
+    auth: (state, auth) => {
+      state.$auth = auth
+    }    
 }
 
 const actions = {

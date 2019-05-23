@@ -7,9 +7,11 @@ import Auth from '@/enum/auth'
 function getBar(navbar, isAuthentificated) {
     console.info(`'${navbar}' bar reloaded authentification is '${isAuthentificated}'`);
     return Routes.filter(el => {
-        if (el.presentetion) {
-            if (el.presentetion.navbar === navbar) {
-                switch (el.presentetion.auth) {
+        const present = el.presentetion
+
+        if (present) {
+            if (present.navbar === navbar) {
+                switch (present.auth) {
                     case Auth.AUTH:
                         return isAuthentificated
                     case Auth.UNAUTH:
@@ -24,7 +26,9 @@ function getBar(navbar, isAuthentificated) {
             return false
         }
      }).map(el => {
-         return {to: el.name, icon: el.presentetion.icon, title: el.presentetion.description}
+        const present = el.presentetion
+
+        return {to: el.name, icon: present.icon, title: present.description}
      })
 }
 

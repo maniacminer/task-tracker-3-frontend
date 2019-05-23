@@ -19,7 +19,7 @@
 
 
         <!-- exit dialog -->
-        <v-subheader inset></v-subheader>
+        <!-- <v-subheader inset></v-subheader> -->
         <v-divider inset></v-divider>
 
         <v-dialog v-model="exitDialog" width="500px" v-if="isAuthentificated">

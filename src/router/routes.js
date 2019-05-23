@@ -56,6 +56,16 @@ export default [
       }
     },
     {
+        path: '/newtask',
+        name: 'newtask',
+        component: () => import('@/views/NewTask.vue'),
+        presentetion: {
+            description: 'Новая задача',
+            navbar: Navbar.NAV,
+            icon: 'assignment',
+          }        
+      },    
+    {
       path: '/about',
       name: 'about',
       description: 'Информация',

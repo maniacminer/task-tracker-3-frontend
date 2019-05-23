@@ -9,7 +9,7 @@ import firebase from './plugins/firebase'
 
 Vue.config.productionTip = false
 store.dispatch('bindAuth', firebase.auth())
-Vue.prototype.$db = firebase.firestore();
+store.dispatch('bindDb', firebase.firestore())
 
 
 new Vue({

@@ -5,7 +5,7 @@
         <v-layout align-center justify-center>
           <v-flex xs12 sm8 md4 >
             <v-card min-width="450px" class="elevation-3">
-              <v-toolbar color="secondary">
+              <v-toolbar height="50px">
                 <v-toolbar-title class="font-weight-light">Вход</v-toolbar-title>
                 <!-- <v-spacer></v-spacer> -->
               </v-toolbar>
