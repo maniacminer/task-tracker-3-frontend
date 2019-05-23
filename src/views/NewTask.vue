@@ -5,19 +5,12 @@
                 <v-flex>
                     <v-card>
                         <v-form ref="form">
-                            <v-toolbar height="60px">
-                                <!-- <v-layout row wrap justify-space-between> -->
-                                    <!-- <v-flex xs3> -->
+                            <v-toolbar height="60px" class="elevation-1">
                                         <v-toolbar-title>Новая задача {{id}} </v-toolbar-title>
                                         <v-spacer></v-spacer>
-                                    <!-- </v-flex> -->
-                                    <!-- <v-flex xs6> -->
-                                    <!-- </v-flex> -->
-                                    <!-- <v-flex sx2> -->
-                                        
                                         <v-btn fab flat @click="save"> <v-icon>save</v-icon></v-btn>
-                                    <!-- </v-flex> -->
-                                <!-- </v-layout> -->
+                                        <v-btn fab flat> <v-icon>bookmark</v-icon></v-btn>
+                                        <v-btn fab flat @click="close"> <v-icon>clear</v-icon></v-btn>
                             </v-toolbar>
                             <v-progress-linear v-slot:progress color="blue" indeterminate v-show="inProgress"></v-progress-linear>
                             <v-card-text>
@@ -55,10 +48,11 @@
                                   
                                         </v-flex>                                        
                                     </v-layout>
+                                    <v-checkbox v-model="completed" label="Выполнена"/>
                             </v-card-text>
                             <v-card-actions>
                                 <v-spacer></v-spacer>
-                                <v-btn flat @click="saveAndClose" class="primary"> <v-icon left>save</v-icon> Сохранить и закрыть </v-btn>
+                                <v-btn flat @click="saveAndClose" class="font-weight-regular secondary black--text"> <v-icon left>save</v-icon> Сохранить и закрыть </v-btn>
                             </v-card-actions>
                         </v-form>
                     </v-card>
@@ -80,6 +74,7 @@ export default {
             title: '',
             inProgress: false,
             description: '',
+            completed: false,
             dueDate: new Date().toISOString().substr(0, 10),
             createDate: new Date().toISOString().substr(0, 10),
             dueDateMenu: false,
@@ -95,12 +90,32 @@ export default {
             ],            
         }
     },
-    // validators: {
-    //     title: { required },
+    created(){
+        const id = this.$route.params.id
 
-    // },
+        if (id) {
+            this.inProgress = true
+            this.$store.dispatch('getTask', {id: id, callBack: (payload, err) => {
+                console.log(payload);
+                if (!err){
+                    this.id = id
+                    this.description = payload.description
+                    this.dueDate = payload.dueDate
+                    this.title = payload.title
+                    this.createDate = payload.createDate
+                    this.priority = payload.priority
+                    this.completed = payload.completed
+                }
+
+                this.inProgress = false
+            }})
+            
+        }
+    },
     methods: {
-        
+        close() {
+            this.$router.push({name: 'tasks'})
+        },
         save() {
             if (!this.$refs.form.validate()){
                 return
@@ -125,7 +140,6 @@ export default {
             this.inProgress = true
             const vm = this;
             this.$store.dispatch('saveTask', {task: this.$data, callBack: (docRef, err) => {
-                console.log(docRef)
 
                 if (docRef) {
                     // vm.id = docRef.id

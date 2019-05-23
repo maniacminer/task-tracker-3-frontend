@@ -56,14 +56,18 @@ export default [
       }
     },
     {
+      path: '/task/:id',
+      component: () => import('@/views/NewTask.vue'),
+    },    
+    {
         path: '/newtask',
         name: 'newtask',
         component: () => import('@/views/NewTask.vue'),
-        presentetion: {
-            description: 'Новая задача',
-            navbar: Navbar.NAV,
-            icon: 'assignment',
-          }        
+        // presentetion: {
+        //     description: 'Новая задача',
+        //     navbar: Navbar.NAV,
+        //     icon: 'assignment',
+        //   }        
       },    
     {
       path: '/about',
