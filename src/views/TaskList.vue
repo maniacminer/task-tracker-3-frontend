@@ -1,13 +1,53 @@
 <template>
     <v-content>
-        <h1>Task list</h1>
-   
-        <v-btn class="primary" :to="{name: 'newtask'}">Новая задача</v-btn>
+        <v-container>
+            <v-card>
+                <v-data-table :headers="headers" :items="taskList">
+                    <template v-slot:items="props">
+                    <td>{{ props.item.title }}</td>
+                    <td>{{ props.item.dueDate }}</td>
+                    <td>{{ props.item.priority }}</td>
+                    </template>            
+
+                </v-data-table>
+
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn class="primary" :to="{name: 'newtask'}">Новая задача</v-btn>
+                </v-card-actions>
+                    
+            </v-card>
+        </v-container>
     </v-content>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
+    data(){
+        return {
+            headers: [
+                {text: 'Заголовок', value: 'title'},
+                {text: 'Дедлайн', value: 'dueDate'},
+                {text: 'Приоритет', value: 'priority'},
+
+            ]
+        }
+
+    },
+    created() {
+        this.$store.dispatch('getTaskList')
+    },
+    computed: { 
+        taskList() {
+            return this.$store.state.Db.taskList
+        }
+
+    },
+    methods: {
+
+    }
 
 }
 </script>
