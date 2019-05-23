@@ -6,15 +6,21 @@
                     <v-card>
                         <v-form>
                             <v-toolbar height="60px">
-                                <!-- <v-layout mt-4> -->
-                                <v-toolbar-title>Новая задача: </v-toolbar-title>
-                                <v-flex pl-3>
-                                    <v-text-field  v-model="title" name="title" type="text"></v-text-field>                            
-                                </v-flex>
-                                    <v-btn flat @click="save"> <v-icon left>save</v-icon> Сохранить </v-btn>
+                                <!-- <v-layout row wrap justify-space-between> -->
+                                    <!-- <v-flex xs3> -->
+                                        <v-toolbar-title>Новая задача {{id}} </v-toolbar-title>
+                                        <v-spacer></v-spacer>
+                                    <!-- </v-flex> -->
+                                    <!-- <v-flex xs6> -->
+                                    <!-- </v-flex> -->
+                                    <!-- <v-flex sx2> -->
+                                        
+                                        <v-btn fab flat @click="save"> <v-icon>save</v-icon></v-btn>
+                                    <!-- </v-flex> -->
                                 <!-- </v-layout> -->
                             </v-toolbar>
                             <v-card-text>
+                                <v-text-field label="Заголовок"  v-model="title" name="title" type="text"></v-text-field>                            
                                 <v-textarea v-model="description" name="description"
                                     label="Описание задачи"></v-textarea> 
                                       <v-layout row wrap justify-space-between>
@@ -49,6 +55,10 @@
                                         </v-flex>                                        
                                     </v-layout>
                             </v-card-text>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn flat @click="saveAndClose" class="primary"> <v-icon left>save</v-icon> Сохранить и закрыть </v-btn>
+                            </v-card-actions>
                         </v-form>
                     </v-card>
                 </v-flex>
@@ -61,10 +71,11 @@
 export default {
     data() {
         return {
+            id: '',
             title: '',
             description: '',
             dueDate: new Date().toISOString().substr(0, 10),
-            currentDate: new Date().toISOString().substr(0, 10),
+            createDate: new Date().toISOString().substr(0, 10),
             dueDateMenu: false,
             userList: [
                 {id:1,name: 'Иванов И.И.'},
@@ -78,7 +89,29 @@ export default {
     },
     methods: {
         save() {
-            this.$store.dispatch('saveTask', this.$data)
+            const vm = this;
+            this.$store.dispatch('saveTask', {task: this.$data, callBack: (docRef, err) => {
+                if (err) {
+                    console.error(err)
+                }
+
+                if (docRef) {
+                    vm.id = docRef.id
+                }
+            }})
+        },
+        saveAndClose() {
+            const vm = this;
+            this.$store.dispatch('saveTask', {task: this.$data, callBack: (docRef, err) => {
+                if (err) {
+                    console.error(err)
+                }
+
+                if (docRef) {
+                    // vm.id = docRef.id
+                    this.$router.push({name: 'tasks'})
+                }
+            }})
         }
     },
     computed: {
@@ -115,16 +148,7 @@ export default {
 </script>
 
 <style scoped>
-    .red {
-        background-color: red;
-        justify-content: flex-end;
-    }
-    .blue {
-        background-color: blue
-    }
-    .green {
-        background-color: green
-    }
+
 
 </style>
 

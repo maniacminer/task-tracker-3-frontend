@@ -2,9 +2,11 @@
     <v-content>
         <v-container>
             <v-card>
-                <v-data-table :headers="headers" :items="taskList">
+                <v-data-table :headers="headers" :items="taskList" :loading="loading">
+                    <v-progress-linear v-slot:progress color="blue" indeterminate></v-progress-linear>
                     <template v-slot:items="props">
                     <td>{{ props.item.title }}</td>
+                    <td>{{ props.item.createDate }}</td>
                     <td>{{ props.item.dueDate }}</td>
                     <td>{{ props.item.priority }}</td>
                     </template>            
@@ -27,8 +29,10 @@ import { mapState } from 'vuex'
 export default {
     data(){
         return {
+            loading: true,
             headers: [
                 {text: 'Заголовок', value: 'title'},
+                {text: 'Создана', value: 'createDate'},
                 {text: 'Дедлайн', value: 'dueDate'},
                 {text: 'Приоритет', value: 'priority'},
 
@@ -37,7 +41,10 @@ export default {
 
     },
     created() {
-        this.$store.dispatch('getTaskList')
+        this.$store.dispatch('getTaskList', err => {
+            console.error(err)
+            this.loading = false
+        })
     },
     computed: { 
         taskList() {
