@@ -2,18 +2,25 @@
     <v-content>
         <v-container>
             <v-card>
-                <v-data-table :headers="headers" :items="taskList" :loading="loading" class="elevation-1" no-data-text="Тут пока нет задач (или они еще не загрузились)">
+                <v-data-table :headers="headers" :items="taskList" :loading="loading" 
+                    class="elevation-1" 
+                    no-data-text="Тут пока нет задач (или они еще не загрузились)"
+                    :rows-per-page-items="rowsPerPageItems"
+                    :pagination.sync="pagination"
+                    rows-per-page-text="Строк на странице">
                 <v-progress-linear  v-slot:progress color="blue" indeterminate></v-progress-linear>
                     <template v-slot:items="props">
-                        <td :class="'row-priority row-priority-'+props.item.priority+' '">{{ props.item.title }}</td>
-                        <td>{{ props.item.createDate }}</td>
-                        <td>{{ props.item.dueDate }}</td>
-                        <!-- <td>{{ props.item.priority }}</td> -->
-                        <td class="justify-center layout px-0">
-                            <v-icon small class="mr-2" @click="editItem(props.item)" >
-                            edit
-                            </v-icon>                            
-                        </td>
+                        <tr :class="{'row-not-actual': props.item.completed}" @click="editItem(props.item)">
+                            <td :class="getRowClasses(props.item)">{{ props.item.title }}</td>
+                            <td>{{ props.item.createDate }}</td>
+                            <td>{{ props.item.dueDate }}</td>
+                            <!-- <td>{{ props.item.priority }}</td> -->
+                            <!-- <td :class="{'row-completed':false}">
+                                <v-icon small class="mr-2" @click="editItem(props.item)" >
+                                edit
+                                </v-icon>                            
+                            </td> -->
+                        </tr>
                     </template>            
                 </v-data-table>
 
@@ -39,9 +46,13 @@ export default {
                 {text: 'Создана', value: 'createDate'},
                 {text: 'Дедлайн', value: 'dueDate'},
                 // {text: 'Приоритет', value: 'priority'},
-                {text: 'Действия', value: 'name', sortable: false },
+                // {text: 'Действия', value: 'name', sortable: false },
 
-            ]
+            ],
+            rowsPerPageItems: [10, 20, 30, 40],
+            pagination: {
+                rowsPerPage: 20
+            },
         }
 
     },
@@ -62,6 +73,20 @@ export default {
     methods: {
         editItem(item){
             this.$router.push(`/task/${item.id}`)
+        },
+        getRowClasses(item, applyCompleted = true) {
+            let classes = {
+                'row-task': true,
+            }
+
+            classes[`row-priority-${item.priority}`] = true
+
+            if (applyCompleted) {
+                classes['completed'] = item.completed
+            }
+
+
+            return classes
         }
 
     }
@@ -75,12 +100,17 @@ export default {
         
     }
 
-    .row-priority {
+    .row-task {
         border-left-style: solid;
         border-left-width: 7px;
+        cursor: pointer;
     }
 
-    .row-completed {
+    .row-not-actual {
+        color: lightsteelblue;
+    }
+
+    .completed {
         text-decoration: line-through;
     }
 

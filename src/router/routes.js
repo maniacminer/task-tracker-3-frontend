@@ -46,8 +46,19 @@ export default [
       }          
     },
     {
-      path: '/tasks',
-      name: 'tasks',
+      path: '/i18n',
+      name: 'i18n',
+      component: () => import('@/views/I18n.vue'),
+      presentetion: {
+        description: 'Язык',
+        navbar: Navbar.AUTH,
+        icon: 'language',
+        auth: Auth.AUTH
+      }          
+    },    
+    {
+      path: '/task',
+      name: 'task',
       component: () => import('@/views/TaskList.vue'),
       presentetion: {
         description: 'Задачи',
@@ -68,7 +79,23 @@ export default [
         //     navbar: Navbar.NAV,
         //     icon: 'assignment',
         //   }        
-      },    
+    },    
+    {
+      path: '/project',
+      name: 'project',
+      component: () => import('@/views/ProjectList.vue'),
+      presentetion: {
+          description: 'Проекты',
+          navbar: Navbar.NAV,
+          icon: 'work',
+      },
+    },
+    {
+      path: '/project-new',
+      name: 'newProject',
+      component: () => import('@/views/Project.vue'),
+
+    },    
     {
       path: '/about',
       name: 'about',

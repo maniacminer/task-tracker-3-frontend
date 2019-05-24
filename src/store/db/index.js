@@ -35,28 +35,28 @@ const actions = {
 
     },
     saveTask: ({ state }, params) => {
-        const task = params.task
-        const dbTask = {
-            id: task.id,
-            title: task.title,
-            dueDate: task.dueDate,
-            priority: task.priority,
-            responsibleId: task.responsible,
-            description: task.description,
-            createDate: task.createDate,
-            completed: task.completed,
+        const payload = params.payload
+        const dbpayload = {
+            id: payload.id,
+            title: payload.title,
+            dueDate: payload.dueDate,
+            priority: payload.priority,
+            responsibleId: payload.responsible,
+            description: payload.description,
+            createDate: payload.createDate,
+            completed: payload.completed,
         }
         
 
         let promise = null
         
-        if (!task.id) {
+        if (!payload.id) {
             console.log('new task save ...')
-            promise = state.$db.collection('task').add(dbTask)
+            promise = state.$db.collection('task').add(dbpayload)
         } else {
             console.log('updating task ...')
             // all fields, include not changed TODO: fix
-            promise = state.$db.collection('task').doc(task.id).set(dbTask)
+            promise = state.$db.collection('task').doc(payload.id).set(dbpayload)
         }
         
         promise.then(docRef => {
@@ -67,6 +67,9 @@ const actions = {
     },
     getTaskList({ state }, callBack) {
         state.taskList = []
+        console.log(state.$db);
+        // state.$db.ref("task").get().then( qs => {
+
         state.$db.collection("task").get().then( qs => {
             qs.forEach((doc) => {
                 const data = doc.data()
@@ -84,6 +87,16 @@ const actions = {
             callBack(err)
         })
 
+    },
+    deleteTask({ state }, params ){
+        if (!params.id) {
+            params.callBack('no document, id is empty')
+            return
+        }
+
+        state.$db.collection('task').doc(params.id).delete()
+            .then(() => params.callBack())
+            .catch(err=> params.callBack(err))
     }
 }
 
