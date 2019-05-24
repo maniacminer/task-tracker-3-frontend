@@ -3,7 +3,7 @@
         <v-container>
             <v-card>
                 <v-data-table :headers="headers" :items="taskList" :loading="loading" class="elevation-1" no-data-text="Тут пока нет задач (или они еще не загрузились)">
-                    <v-progress-linear v-slot:progress color="blue" indeterminate></v-progress-linear>
+                <v-progress-linear  v-slot:progress color="blue" indeterminate></v-progress-linear>
                     <template v-slot:items="props">
                         <td :class="'row-priority row-priority-'+props.item.priority+' '">{{ props.item.title }}</td>
                         <td>{{ props.item.createDate }}</td>

@@ -4,16 +4,17 @@
             <v-layout>
                 <v-flex>
                     <v-card>
-                        <v-form ref="form">
+                        <v-form ref="form" disabled>
                             <v-toolbar height="60px" class="elevation-1">
-                                        <v-toolbar-title>Новая задача {{id}} </v-toolbar-title>
-                                        <v-spacer></v-spacer>
-                                        <v-btn fab flat @click="save"> <v-icon>save</v-icon></v-btn>
-                                        <v-btn fab flat> <v-icon>bookmark</v-icon></v-btn>
-                                        <v-btn fab flat @click="close"> <v-icon>clear</v-icon></v-btn>
+                                <v-progress-circular indeterminate color="primary" v-show="inProgress"/>
+                                <v-icon v-show="!inProgress">assignment</v-icon>
+                                <v-toolbar-title>Новая задача</v-toolbar-title>
+                                <v-spacer></v-spacer>
+                                <v-btn fab flat @click="save"> <v-icon>save</v-icon></v-btn>
+                                <v-btn fab flat> <v-icon>bookmark</v-icon></v-btn>
+                                <v-btn fab flat @click="close"> <v-icon>clear</v-icon></v-btn>
                             </v-toolbar>
-                            <v-progress-linear v-slot:progress color="blue" indeterminate v-show="inProgress"></v-progress-linear>
-                            <v-card-text>
+                            <v-card-text v-if="!isOpening">
                                 <v-text-field label="Заголовок" :rules="mustNotBeEmpty" v-model="title" name="title" type="text"></v-text-field>                            
                                 <v-textarea v-model="description" name="description"
                                     label="Описание задачи" ></v-textarea> 
@@ -50,7 +51,7 @@
                                     </v-layout>
                                     <v-checkbox v-model="completed" label="Выполнена"/>
                             </v-card-text>
-                            <v-card-actions>
+                            <v-card-actions v-if="!isOpening">
                                 <v-spacer></v-spacer>
                                 <v-btn flat @click="saveAndClose" class="font-weight-regular secondary black--text"> <v-icon left>save</v-icon> Сохранить и закрыть </v-btn>
                             </v-card-actions>
@@ -85,6 +86,7 @@ export default {
             ],
             responsible: null,
             priority: 2,
+            isOpening: true,
             mustNotBeEmpty: [
                 v => !!v || 'Поле обязательно для заполнения',
             ],            
@@ -95,6 +97,7 @@ export default {
 
         if (id) {
             this.inProgress = true
+            this.isOpening = true
             this.$store.dispatch('getTask', {id: id, callBack: (payload, err) => {
                 console.log(payload);
                 if (!err){
@@ -108,6 +111,7 @@ export default {
                 }
 
                 this.inProgress = false
+                this.isOpening = false
             }})
             
         }
