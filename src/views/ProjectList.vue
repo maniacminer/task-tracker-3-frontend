@@ -5,7 +5,7 @@
 
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn flat class="font-weight-regular secondary black--text" :to="{name: 'newProject'}">Добавить проект</v-btn>
+                    <v-btn flat class="font-weight-regular secondary black--text" :to="{name: 'project-new'}">Добавить проект</v-btn>
                 </v-card-actions>
                     
             </v-card>

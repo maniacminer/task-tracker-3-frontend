@@ -1,13 +1,18 @@
-import { timingSafeEqual } from "crypto";
+import { actions as journalsActions, state as journalState, getters as journalGetters} from './journals'
 
-const state = {
+let state = {
     $db: null,
-    taskList: []
 }
 
-const getters = {
+state = Object.assign(state, journalState)
+
+
+let getters = {
 
 }
+
+getters = Object.assign(getters, journalGetters)
+
 
 const mutations = {
     db: (state, db) => {
@@ -15,12 +20,12 @@ const mutations = {
     }        
 }
 
-const actions = {
+let actions = {
     bindDb: ({ commit }, db) => {
         commit('db', db)
     },
-    getTask: ({ state }, params) => {
-        const promise = state.$db.collection('task').doc(params.id).get()
+    getDoc: ({ state }, params) => {
+        const promise = state.$db.collection(params.name).doc(params.id).get()
 
         
         promise.then(doc => {
@@ -34,29 +39,20 @@ const actions = {
         })
 
     },
-    saveTask: ({ state }, params) => {
+    saveDoc: ({ state }, params) => {
         const payload = params.payload
-        const dbpayload = {
-            id: payload.id,
-            title: payload.title,
-            dueDate: payload.dueDate,
-            priority: payload.priority,
-            responsibleId: payload.responsible,
-            description: payload.description,
-            createDate: payload.createDate,
-            completed: payload.completed,
-        }
+        const collectionName = params.payload._name
+        let db = {}
+        params.payload._persistent.forEach(f => db[f] = params.payload[f])
         
 
         let promise = null
         
         if (!payload.id) {
-            console.log('new task save ...')
-            promise = state.$db.collection('task').add(dbpayload)
+            promise = state.$db.collection(collectionName).add(db)
         } else {
-            console.log('updating task ...')
             // all fields, include not changed TODO: fix
-            promise = state.$db.collection('task').doc(payload.id).set(dbpayload)
+            promise = state.$db.collection(collectionName).doc(payload.id).set(db)
         }
         
         promise.then(docRef => {
@@ -65,40 +61,29 @@ const actions = {
             params.callBack(null, err)
         })
     },
-    getTaskList({ state }, callBack) {
-        state.taskList = []
-        console.log(state.$db);
-        // state.$db.ref("task").get().then( qs => {
-
-        state.$db.collection("task").get().then( qs => {
-            qs.forEach((doc) => {
-                const data = doc.data()
-                state.taskList.push({id: doc.id,
-                    title: data.title,
-                    dueDate: data.dueDate,
-                    priority: data.priority,
-                    createDate: data.createDate,
-                    completed: data.completed,
-                })
-
-            })
-            callBack()
-        }).catch(err => {
-            callBack(err)
-        })
-
-    },
-    deleteTask({ state }, params ){
+    deleteDoc({ state }, params ){
+        console.log(params);
         if (!params.id) {
             params.callBack('no document, id is empty')
             return
         }
 
-        state.$db.collection('task').doc(params.id).delete()
+        state.$db.collection(params.name).doc(params.id).delete()
             .then(() => params.callBack())
             .catch(err=> params.callBack(err))
-    }
+    },
+    getCollection({state}, params){
+        let collection = state.$db.collection(params.name)
+
+        if (params.filters) {
+            params.filters.forEach(f => collection=collection.where(f.field, f.eq, f.value))
+        }
+
+        return collection.get()
+    },    
 }
+
+actions = Object.assign(actions, journalsActions)
 
 export default {
     state, getters, mutations, actions

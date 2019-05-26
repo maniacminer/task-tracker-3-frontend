@@ -71,8 +71,8 @@ export default [
       component: () => import('@/views/NewTask.vue'),
     },    
     {
-        path: '/newtask',
-        name: 'newtask',
+        path: '/task-new',
+        name: 'task-new',
         component: () => import('@/views/NewTask.vue'),
         // presentetion: {
         //     description: 'Новая задача',
@@ -92,7 +92,7 @@ export default [
     },
     {
       path: '/project-new',
-      name: 'newProject',
+      name: 'project-new',
       component: () => import('@/views/Project.vue'),
 
     },    

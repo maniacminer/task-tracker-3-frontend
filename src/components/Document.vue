@@ -6,10 +6,12 @@
                     <v-card>
                         <v-form ref="form">
                             <v-toolbar height="60px" class="elevation-1">
-                                <v-progress-circular indeterminate color="primary" v-show="inProgress"/>
-                                <v-icon v-show="!inProgress">assignment</v-icon>
-                                <v-toolbar-title>Документ {{data.id}}</v-toolbar-title>
+                                <!-- <v-progress-circular indeterminate color="primary" v-show="inProgress"/> -->
+                                <v-icon>assignment</v-icon>
+                                <v-toolbar-title>{{data._title}}</v-toolbar-title>
+
                                 <v-spacer></v-spacer>
+                                <slot name="toolbar"></slot>
 
                                 <v-dialog v-model="deleteDialog" width="500px">
                                     <template v-slot:activator="{ on }">
@@ -17,7 +19,7 @@
                                     </template>
                                     <v-card>
                                         <v-card-title>
-                                            <span class="headline">Удалить !документ!?</span>
+                                            <span class="headline">Удалить документ?</span>
                                         </v-card-title>
                                         <v-card-actions>
                                             <v-spacer></v-spacer>
@@ -42,18 +44,20 @@
                                 </v-tooltip>        
 
 
-
-
-                                <slot name="toolbar"></slot>
-
                                 <v-tooltip bottom>
                                     <template v-slot:activator="{ on }">
                                         <v-btn fab flat @click="close" v-on="on"> <v-icon>clear</v-icon></v-btn>
                                     </template>
                                     <span>Вернуться в журнал</span>
                                 </v-tooltip>                                     
-                            </v-toolbar>           
-                            <slot v-if="!isOpening" name="main"></slot>
+                            </v-toolbar>     
+                            <v-progress-linear v-show="inProgress" v-slot:progress color="grey" indeterminate />
+                            <v-card-text>
+                                <slot v-if="!isOpening" name="main"></slot>
+                            </v-card-text>
+                            <v-card-actions>
+                                <slot v-if="!isOpening" name="actions"></slot>
+                            </v-card-actions>
                         </v-form>
                     </v-card>
                 </v-flex>
@@ -76,6 +80,9 @@ export default {
     },
     methods: {
         close() {
+            // console.log(this.$router.history);
+            // this.$router.go(-1)
+
             this.$router.push({name: this.lcName})
             this.$emit('close')
         },
@@ -87,7 +94,7 @@ export default {
 
             this.inProgress = true
             const vm = this;
-            this.$store.dispatch(`save${this.mdName}`, {payload: this.data, callBack: (docRef, err) => {
+            this.$store.dispatch('saveDoc', {payload: this.data, callBack: (docRef, err) => {
                 if (err) {
                     console.error(err)
                 }
@@ -105,10 +112,12 @@ export default {
             this.inProgress = true
 
             const vm = this
-            this.$store.dispatch(`delete${this.mdName}`, {id: this.data.id, callBack: err => {
+            this.$store.dispatch(`deleteDoc`, {id: this.data.id, name: this.lcName, callBack: err => {
                 if (err) {
                     console.error(err)
                 } else {
+                    // this.$router.go(-1)
+
                     this.$router.push({name: this.lcName})
                 }
                 this.inProgress = false
@@ -122,7 +131,7 @@ export default {
 
         if (id) {
             this.inProgress = true
-            this.$store.dispatch(`get${this.mdName}`, {id: id, callBack: (payload, err) => {
+            this.$store.dispatch(`getDoc`, {id: id, name: this.lcName, callBack: (payload, err) => {
                 if (!err){
                     this.data = Object.assign(this.data, payload)
                     this.data.id = id
@@ -141,11 +150,11 @@ export default {
   
     computed: {
         mdName() {
-            const str = this.data.name
+            const str = this.data._name
             return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
         },
         lcName() {
-            return this.data.name.toLowerCase()
+            return this.data._name.toLowerCase()
         },
         isNew() {
             return !!this.data.id

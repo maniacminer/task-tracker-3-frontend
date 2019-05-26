@@ -1,79 +1,37 @@
 <template>
-    <v-content>
-        <v-container>
-            <v-card>
-                <v-data-table :headers="headers" :items="taskList" :loading="loading" 
-                    class="elevation-1" 
-                    no-data-text="Тут пока нет задач (или они еще не загрузились)"
-                    :rows-per-page-items="rowsPerPageItems"
-                    :pagination.sync="pagination"
-                    rows-per-page-text="Строк на странице">
-                <v-progress-linear  v-slot:progress color="blue" indeterminate></v-progress-linear>
-                    <template v-slot:items="props">
-                        <tr :class="{'row-not-actual': props.item.completed}" @click="editItem(props.item)">
-                            <td :class="getRowClasses(props.item)">{{ props.item.title }}</td>
-                            <td>{{ props.item.createDate }}</td>
-                            <td>{{ props.item.dueDate }}</td>
-                            <!-- <td>{{ props.item.priority }}</td> -->
-                            <!-- <td :class="{'row-completed':false}">
-                                <v-icon small class="mr-2" @click="editItem(props.item)" >
-                                edit
-                                </v-icon>                            
-                            </td> -->
-                        </tr>
-                    </template>            
-                </v-data-table>
-
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn flat class="font-weight-regular secondary black--text" :to="{name: 'newtask'}">Новая задача</v-btn>
-                </v-card-actions>
-                    
-            </v-card>
-        </v-container>
-    </v-content>
+    <app-journal :headers="headers" :metadata="metadata" :filters="filters" >
+        <template v-slot:main="row" >
+            <td :class="getRowClasses(row.item)">{{ row.item.title }}</td>
+            <td>{{ row.item.createDate }}</td>
+            <td>{{ row.item.dueDate }}</td>
+        </template>
+        <template v-slot:actions>
+            <v-checkbox v-model="showClosed" label="Показывать закрытые" color="grey darken-2" ></v-checkbox>
+            <v-spacer></v-spacer>
+            <v-btn flat class="font-weight-regular secondary black--text" :to="{name: 'task-new'}">Новая задача</v-btn>
+        </template>
+    </app-journal>
 </template>
 
 <script>
-import { mapState } from 'vuex'
 
 export default {
     data(){
         return {
+            metadata: {
+                name: 'task',
+            },
             loading: true,
             headers: [
                 {text: 'Заголовок', value: 'title'},
                 {text: 'Создана', value: 'createDate'},
                 {text: 'Дедлайн', value: 'dueDate'},
-                // {text: 'Приоритет', value: 'priority'},
-                // {text: 'Действия', value: 'name', sortable: false },
-
             ],
-            rowsPerPageItems: [10, 20, 30, 40],
-            pagination: {
-                rowsPerPage: 20
-            },
+            showClosed: this.$route.query.showClosed === 'true' 
         }
+    },
 
-    },
-    created() {
-        this.$store.dispatch('getTaskList', err => {
-            if (err){
-                console.error(err)
-            }
-            this.loading = false
-        })
-    },
-    computed: { 
-        taskList() {
-            return this.$store.state.Db.taskList
-        }
-
-    },
     methods: {
-        editItem(item){
-            this.$router.push(`/task/${item.id}`)
-        },
         getRowClasses(item, applyCompleted = true) {
             let classes = {
                 'row-task': true,
@@ -85,16 +43,33 @@ export default {
                 classes['completed'] = item.completed
             }
 
-
             return classes
         }
 
+    },
+
+
+    watch: {
+        showClosed() {
+            this.$router.push({name: this.metadata.name, query: {showClosed: this.showClosed}})
+        },
+  
+    },
+
+    computed: {
+        filters() {
+            let filters = []
+            if (!this.showClosed) {
+                filters.push({field: "completed", eq: "==", value: false})
+            }
+            return filters
+        }
     }
 
 }
 </script>
 
-<style>
+<style >
     thead {
         background-color: #F5F5F5;
         
@@ -112,6 +87,7 @@ export default {
 
     .completed {
         text-decoration: line-through;
+        color: lightsteelblue;
     }
 
     .row-priority-1 {
