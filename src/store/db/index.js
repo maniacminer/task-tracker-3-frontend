@@ -48,11 +48,11 @@ let actions = {
 
         let promise = null
         
-        if (!payload.id) {
+        if (!params.id) {
             promise = state.$db.collection(collectionName).add(db)
         } else {
             // all fields, include not changed TODO: fix
-            promise = state.$db.collection(collectionName).doc(payload.id).set(db)
+            promise = state.$db.collection(collectionName).doc(params.id).set(db)
         }
         
         promise.then(docRef => {

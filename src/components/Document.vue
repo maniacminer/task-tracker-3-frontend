@@ -95,7 +95,7 @@ export default {
 
             this.inProgress = true
             const vm = this;
-            this.$store.dispatch('saveDoc', {payload: this.data, callBack: (docRef, err) => {
+            this.$store.dispatch('saveDoc', {payload: this.data, id: this.id , callBack: (docRef, err) => {
                 if (err) {
                     console.error(err)
                 }
@@ -140,11 +140,13 @@ export default {
 
                 this.inProgress = false
                 this.isOpening = false
+
             }})
             
         } else {
             this.isOpening = false
         }
+
 
         this.$emit('loaded')
     },
