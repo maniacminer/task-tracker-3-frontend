@@ -28,8 +28,8 @@
                     </v-layout>
                 </v-flex>
                 <v-flex xs12 sm12 md4>
-                    <v-select :items="userList" label="Ответственный" 
-                        v-model="responsible" item-value="id" item-text="name">
+                    <v-select prepend-icon="person" :items="userList" label="Ответственный" persistent-hint single-line return-object
+                            v-model="responsible" :hint="responsible.fullName" item-value="id" item-text="name">
                     </v-select>                                            
             
                 </v-flex>                                        
@@ -64,7 +64,7 @@ export default {
         return {
             _name: 'task',
             _title: 'Задача',
-            _persistent: ['title', 'description', 'completed', 'dueDate', 'createDate', 'priority'],
+            _persistent: ['title', 'description', 'completed', 'dueDate', 'createDate', 'priority', 'responsible'],
             id: null,
             title: '',
             inProgress: false,
@@ -73,12 +73,7 @@ export default {
             dueDate: new Date().toISOString().substr(0, 10),
             createDate: new Date().toISOString().substr(0, 10),
             dueDateMenu: false,
-            userList: [
-                {id:1,name: 'Иванов И.И.'},
-                {id:2,name: 'Петров А.М.'},
-                {id:3,name: 'Сидоров В.С.'},
-            ],
-            responsible: null,
+            responsible: { id: null, name: null, fullName: null},
             priority: 2,
             mustNotBeEmpty: [
                 v => !!v || 'Поле обязательно для заполнения',
@@ -114,6 +109,11 @@ export default {
         // }
     },
     computed: {
+        userList() { return [
+            {id:1,name: 'Иванов И.И.', fullName: 'Иванов Иван Иванович'},
+            {id:2,name: 'Петров А.М.', fullName: 'Иванов Алексей Макаровчи'},
+            {id:3,name: 'Сидоров В.С.', fullName: 'Сидоров Владимир Сергеевич'},
+        ]},        
         priorityColor() {
             if (this.priority==1){
                 return 'blue'

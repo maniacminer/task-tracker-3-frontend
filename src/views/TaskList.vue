@@ -4,6 +4,7 @@
             <td :class="getRowClasses(row.item)">{{ row.item.title }}</td>
             <td>{{ row.item.createDate }}</td>
             <td>{{ row.item.dueDate }}</td>
+            <td>{{ row.item.responsible ? row.item.responsible.name : '' }}</td>
         </template>
         <template v-slot:actions>
             <v-checkbox v-model="showClosed" label="Показывать закрытые" color="grey darken-2" ></v-checkbox>
@@ -26,8 +27,10 @@ export default {
                 {text: 'Заголовок', value: 'title'},
                 {text: 'Создана', value: 'createDate'},
                 {text: 'Дедлайн', value: 'dueDate'},
+                {text: 'Ответственный', value: 'responsible'},
+
             ],
-            showClosed: this.$route.query.showClosed === 'true' 
+            showClosed: this.$route.query.showClosed === 'true'
         }
     },
 
@@ -44,6 +47,9 @@ export default {
             }
 
             return classes
+        },
+        rowProcessor(row, data) {
+
         }
 
     },

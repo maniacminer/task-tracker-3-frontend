@@ -41,6 +41,7 @@ export default {
         headers: null,
         metadata: null,
         filters: null,
+        rowProcessor: null,
     },
 
     created() {
@@ -51,17 +52,22 @@ export default {
             this.$router.push(`/${this.metadata.name}/${item.id}`)
         },        
         read() {
-            console.log(this.filters);
             const vm = this
             this.$store.dispatch('getCollection', {name: this.metadata.name, filters: this.filters})
                 .then(querySnapshot => {
                     vm.items = []
                     querySnapshot.forEach(function(doc) {
                         let row = {id: doc.id}
-                        row = Object.assign(row, doc.data())
+                        if (!vm.rowProcessor) {
+                            row = Object.assign(row, doc.data())
+                        } else {
+                            vm.rowProcessor(row, doc.data())
+                        }
+
                         vm.items.push(row)
                     })
                     this.loading = false
+                    console.log(vm.items);
                 })
                 .catch(err => {
                     console.error(err)
