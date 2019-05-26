@@ -91,6 +91,10 @@ export default [
       },
     },
     {
+      path: '/project/:id',
+      component: () => import('@/views/Project.vue'),
+    },      
+    {
       path: '/project-new',
       name: 'project-new',
       component: () => import('@/views/Project.vue'),

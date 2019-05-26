@@ -73,6 +73,7 @@ export default {
             inProgress: false,
             isOpening: true,
             deleteDialog: false,
+            id: null,
         }
     }, 
     props: {
@@ -100,7 +101,7 @@ export default {
                 }
 
                 if (docRef) {
-                    vm.data.id = docRef.id
+                    vm.id = docRef.id
                     this.$router.push(`/${this.lcName}/${docRef.id}`)
                 }
                 this.inProgress = false
@@ -112,7 +113,7 @@ export default {
             this.inProgress = true
 
             const vm = this
-            this.$store.dispatch(`deleteDoc`, {id: this.data.id, name: this.lcName, callBack: err => {
+            this.$store.dispatch(`deleteDoc`, {id: this.id, name: this.lcName, callBack: err => {
                 if (err) {
                     console.error(err)
                 } else {
@@ -134,7 +135,7 @@ export default {
             this.$store.dispatch(`getDoc`, {id: id, name: this.lcName, callBack: (payload, err) => {
                 if (!err){
                     this.data = Object.assign(this.data, payload)
-                    this.data.id = id
+                    this.id = id
                 }
 
                 this.inProgress = false
@@ -157,7 +158,7 @@ export default {
             return this.data._name.toLowerCase()
         },
         isNew() {
-            return !!this.data.id
+            return !!this.id
         },
         isDeletable(){
             return !this.isNew

@@ -55,11 +55,10 @@
 </template>
 
 <script>
-// import { required, maxLength, email } from 'vuelidate/lib/validators'
-// import { validationMixin } from 'vuelidate'
+import  validationMixins from '@/validationMixins'
 
 export default {
-    // mixins: [validationMixin],
+    mixins: [validationMixins],
     data() {
         return {
             _name: 'task',
@@ -75,9 +74,6 @@ export default {
             dueDateMenu: false,
             responsible: { id: null, name: null, fullName: null},
             priority: 2,
-            mustNotBeEmpty: [
-                v => !!v || 'Поле обязательно для заполнения',
-            ],
         }
     },
     created(){
