@@ -1,6 +1,6 @@
-const Navbar = {
-    NAV: 'NAV',
-    AUTH: 'AUTH'
+const navbar = {
+  NAV: "NAV",
+  AUTH: "AUTH"
 }
 
-export default Navbar
+export default navbar

@@ -1,5 +1,20 @@
 <template>
-  <v-content>
-    <h1>This is an about page</h1>
-  </v-content>
+  <div>
+    <v-bt @click="click"></v-bt>
+  </div>
 </template>
+
+<script>
+export default {
+  data() {
+    return {};
+  },
+  methods: {
+    click(e) {
+      console.log(e);
+    }
+  }
+};
+</script>
+
+<style></style>
