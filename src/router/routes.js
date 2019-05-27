@@ -101,6 +101,16 @@ export default [
 
     },    
     {
+      path: '/user',
+      name: 'user',
+      component: () => import('@/views/UserList.vue'),
+      presentetion: {
+          description: 'Пользователи',
+          navbar: Navbar.NAV,
+          icon: 'people',
+      },
+    },      
+    {
       path: '/about',
       name: 'about',
       description: 'Информация',
@@ -111,6 +121,6 @@ export default [
         icon: 'info',
       }
 
-    },    
+    },  
   ]
 
