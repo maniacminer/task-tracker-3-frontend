@@ -58,6 +58,9 @@
                             <v-card-actions>
                                 <slot v-if="!isOpening" name="actions"></slot>
                             </v-card-actions>
+                            <v-alert :value="error_msg" type="error" class="" outline>
+                                {{ error_msg ? error_msg.message : '' }}
+                            </v-alert>       
                         </v-form>
                     </v-card>
                 </v-flex>
@@ -74,6 +77,7 @@ export default {
             isOpening: true,
             deleteDialog: false,
             id: null,
+            error_msg: null,
         }
     }, 
     props: {
@@ -81,9 +85,6 @@ export default {
     },
     methods: {
         close() {
-            // console.log(this.$router.history);
-            // this.$router.go(-1)
-
             this.$router.push({name: this.lcName})
             this.$emit('close')
         },
@@ -97,6 +98,7 @@ export default {
             const vm = this;
             this.$store.dispatch('saveDoc', {payload: this.data, id: this.id , callBack: (docRef, err) => {
                 if (err) {
+                    vm.error_msg = err
                     console.error(err)
                 }
 
@@ -113,18 +115,17 @@ export default {
             this.inProgress = true
 
             const vm = this
-            this.$store.dispatch(`deleteDoc`, {id: this.id, name: this.lcName, callBack: err => {
+            vm.$store.dispatch(`deleteDoc`, {id: vm.id, name: this.lcName, callBack: err => {
                 if (err) {
+                    vm.error_msg = err
                     console.error(err)
                 } else {
-                    // this.$router.go(-1)
-
-                    this.$router.push({name: this.lcName})
+                    vm.$router.push({name: vm.lcName})
                 }
-                this.inProgress = false
+                vm.inProgress = false
             }})
 
-            this.$emit('delete')
+            vm.$emit('delete')
         },          
     },
     created() {
@@ -136,6 +137,9 @@ export default {
                 if (!err){
                     this.data = Object.assign(this.data, payload)
                     this.id = id
+                } else {
+                    this.error_msg = err
+                    console.error(err)                    
                 }
 
                 this.inProgress = false
