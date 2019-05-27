@@ -1,55 +1,53 @@
 <template>
-    <app-doc :data="$data">
-        <template v-slot:toolbar>
-        </template>
-        <template v-slot:main>
-            <v-text-field label="Заголовок" :rules="mustNotBeEmpty" v-model="title" name="title" type="text"></v-text-field>                            
-            <v-textarea v-model="description" name="description"
-                label="Описание задачи" ></v-textarea> 
-            <v-layout row wrap justify-space-between>
-                <v-flex xs12 sm5 md3 >
-                    <v-menu v-model="dueDateMenu" :close-on-content-click="true"
-                    offset-y>
-                        <template v-slot:activator="{ on }">
-                        <!-- <label class="grey--text text--darken-1"  for="">Дата дедлайна</label> -->
-                        <v-text-field v-model="dueDate" label="Дедлайн"
-                            prepend-icon="event" readonly v-on="on" >
-                        </v-text-field>
-                        </template>
-                        <v-date-picker v-model="dueDate" @input="dueDateMenu = false"></v-date-picker>
-                    </v-menu>
-                </v-flex>
-                <v-flex xs12 sm6 md4>
-                    <v-layout>
-                        <v-flex>
-                            <label class="grey--text text--darken-1 caption"  for="">Приоритет: {{priorityDescr}}</label>
-                            <v-rating :background-color="priorityColor" id="priority" :color="priorityColor" full-icon="whatshot" empty-icon="minimize" v-model="priority"></v-rating>
-                        </v-flex>
-                    </v-layout>
-                </v-flex>
-                <v-flex xs12 sm12 md4>
-                    <v-select prepend-icon="person" :items="userList" label="Ответственный" persistent-hint single-line return-object
-                            v-model="responsible" :hint="responsible.fullName" item-value="id" item-text="name">
-                    </v-select>                                            
-            
-                </v-flex>                                        
-            </v-layout>
+    <app-doc :data="$data" @dataLoaded="dataLoaded" >
+        <v-text-field label="Заголовок" :rules="mustNotBeEmpty" v-model="title" name="title" type="text"></v-text-field>                            
+        <v-textarea v-model="description" name="description"
+            label="Описание задачи" ></v-textarea> 
+        <v-layout row wrap justify-space-between>
+            <v-flex xs12 sm5 md3 >
+                <v-menu v-model="dueDateMenu" :close-on-content-click="true"
+                offset-y>
+                    <template v-slot:activator="{ on }">
+                    <!-- <label class="grey--text text--darken-1"  for="">Дата дедлайна</label> -->
+                    <v-text-field v-model="dueDate" label="Дедлайн"
+                        prepend-icon="event" readonly v-on="on" >
+                    </v-text-field>
+                    </template>
+                    <v-date-picker v-model="dueDate" @input="dueDateMenu = false"></v-date-picker>
+                </v-menu>
+            </v-flex>
+            <v-flex xs12 sm6 md4>
+                <v-layout>
+                    <v-flex>
+                        <label class="grey--text text--darken-1 caption"  for="">Приоритет: {{priorityDescr}}</label>
+                        <v-rating :background-color="priorityColor" id="priority" :color="priorityColor" full-icon="whatshot" empty-icon="minimize" v-model="priority"></v-rating>
+                    </v-flex>
+                </v-layout>
+            </v-flex>
+            <v-flex xs12 sm12 md4>
+                <v-select prepend-icon="person" :items="responsibleList" label="Ответственный" persistent-hint single-line return-object
+                        v-model="responsible" :hint="responsible.fullName" item-value="id" item-text="name"
+                        @click.native="loadList">
+                </v-select>             
+            </v-flex>                                        
+        </v-layout>
 
-            <!-- <v-tooltip top>
-                <template v-slot:activator="{ on }">
-                    <v-btn flat @click="saveAndClose" v-on="on" class="font-weight-regular secondary black--text">
-                        <v-icon left>save</v-icon>
-                        <v-icon>clear</v-icon>
-                    </v-btn>
-                </template>
-                <span>Сохранить и вернуться в журнал задач</span>
-            </v-tooltip>                                 -->
-        </template>
+        <!-- <v-tooltip top>
+            <template v-slot:activator="{ on }">
+                <v-btn flat @click="saveAndClose" v-on="on" class="font-weight-regular secondary black--text">
+                    <v-icon left>save</v-icon>
+                    <v-icon>clear</v-icon>
+                </v-btn>
+            </template>
+            <span>Сохранить и вернуться в журнал задач</span>
+        </v-tooltip>                                 -->
+
         <template v-slot:actions>
             <v-layout ml-2>
                 <v-checkbox color="grey darken-2" v-model="completed" label="Закрыта"/>
             </v-layout>
             <v-spacer></v-spacer>            
+
         </template>
     </app-doc>
 </template>
@@ -64,7 +62,6 @@ export default {
             _name: 'task',
             _title: 'Задача',
             _persistent: ['title', 'description', 'completed', 'dueDate', 'createDate', 'priority', 'responsible'],
-            id: null,
             title: '',
             inProgress: false,
             description: '',
@@ -74,13 +71,37 @@ export default {
             dueDateMenu: false,
             responsible: { id: null, name: null, fullName: null},
             priority: 2,
+            responsibleList: [],
         }
     },
-    created(){
 
-    },
     methods: {
+        loadList() {
+            const vm = this
+            this.$store.dispatch(`getCollection`, {name: 'user'})
+                .then(querySnapshot => {
+                    vm.responsibleList = []
+                    querySnapshot.forEach(doc => {
+                        let row = {id: doc.id}
+                        const data = doc.data()
 
+                        row.name = data.name
+                        row.fullName = data.fullName
+
+                        vm.responsibleList.push(row)
+                    })                    
+
+                })
+                .catch(err => {
+                })
+        },
+
+        dataLoaded(data){
+            // если нет в списке выбора v-select не отображает
+            if (data.responsible && data.responsible.id) {
+                this.responsibleList = [data.responsible]
+            }
+        },
         // saveAndClose() {
         //     if (!this.$refs.form.validate()){
         //         return
@@ -105,11 +126,7 @@ export default {
         // }
     },
     computed: {
-        userList() { return [
-            {id:1,name: 'Иванов И.И.', fullName: 'Иванов Иван Иванович'},
-            {id:2,name: 'Петров А.М.', fullName: 'Иванов Алексей Макаровчи'},
-            {id:3,name: 'Сидоров В.С.', fullName: 'Сидоров Владимир Сергеевич'},
-        ]},        
+        getUserList() { return this.responsibleList },        
         priorityColor() {
             if (this.priority==1){
                 return 'blue'

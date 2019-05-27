@@ -13,6 +13,8 @@
                     <template v-slot:items="row" >
                         <tr  @click="editItem(row.item)">
                             <slot name="main" v-bind="row"></slot>
+                            <!-- <slot>
+                            </slot> -->
                             <template v-if="!isTemplateForRowProvided">
                                 <td v-for="c in headers" v-bind:key="c.value">{{ row.item[c.value] }}</td>
                             </template>
@@ -66,7 +68,7 @@ export default {
             vm.$store.dispatch('getCollection', {name: vm.metadata.name, filters: vm.filters})
                 .then(querySnapshot => {
                     vm.items = []
-                    querySnapshot.forEach(function(doc) {
+                    querySnapshot.forEach(doc => {
                         let row = {id: doc.id}
                         if (!vm.rowProcessor) {
                             row = Object.assign(row, doc.data())

@@ -14,7 +14,10 @@
                   <v-text-field v-model="email" prepend-icon="email" name="login" 
                       label="E-mail" type="email"></v-text-field>
                   <v-text-field v-model="password" prepend-icon="lock" name="password" 
-                      label="Пароль" id="password" type="password"></v-text-field>
+                      label="Пароль" id="password" 
+                      :append-icon="showPassword ? 'visibility' : 'visibility_off'"
+                      :type="showPassword ? 'text' : 'password'"
+                      @click:append="showPassword = !showPassword"></v-text-field>
                   <v-alert :value="error" type="error" class="" outline>
                       {{ error_msg }}
                   </v-alert>                  
@@ -38,7 +41,9 @@ export default {
             email: '',
             password: '',
             error_msg: '',
-            error: false
+            error: false,
+
+            showPassword: false,            
         }
     },
     methods: {

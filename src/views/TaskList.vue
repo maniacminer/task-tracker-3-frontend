@@ -22,13 +22,11 @@ export default {
             metadata: {
                 name: 'task',
             },
-            loading: true,
             headers: [
                 {text: 'Заголовок', value: 'title'},
                 {text: 'Создана', value: 'createDate'},
                 {text: 'Дедлайн', value: 'dueDate'},
                 {text: 'Ответственный', value: 'responsible'},
-
             ],
             showClosed: this.$route.query.showClosed === 'true'
         }

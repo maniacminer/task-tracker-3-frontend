@@ -53,7 +53,7 @@
                             </v-toolbar>     
                             <v-progress-linear v-show="inProgress" v-slot:progress color="grey" indeterminate />
                             <v-card-text>
-                                <slot v-if="!isOpening" name="main"></slot>
+                                <slot v-if="!isOpening" name="default"></slot>
                             </v-card-text>
                             <v-card-actions>
                                 <slot v-if="!isOpening" name="actions"></slot>
@@ -89,14 +89,10 @@ export default {
             this.$emit('close')
         },
 
-        save() {
-            if (!this.$refs.form.validate()){
-                return
-            }
-
-            this.inProgress = true
-            const vm = this;
-            this.$store.dispatch('saveDoc', {payload: this.data, id: this.id , callBack: (docRef, err) => {
+        $saving() {
+            const vm = this
+            vm.inProgress = true
+            vm.$store.dispatch('saveDoc', {payload: vm.data, id: vm.id , callBack: (docRef, err) => {
                 if (err) {
                     vm.error_msg = err
                     console.error(err)
@@ -104,18 +100,33 @@ export default {
 
                 if (docRef) {
                     vm.id = docRef.id
-                    this.$router.push(`/${this.lcName}/${docRef.id}`)
+                    vm.data.id = docRef.id
+                    vm.$router.push(`/${vm.lcName}/${docRef.id}`)
                 }
-                this.inProgress = false
-            }})            
+                vm.inProgress = false
 
-            this.$emit('save')
+                vm.$emit('afterSave')
+            }})
         },
-        deleteDoc() {
-            this.inProgress = true
 
+        save() {
             const vm = this
-            vm.$store.dispatch(`deleteDoc`, {id: vm.id, name: this.lcName, callBack: err => {
+            if (!vm.$refs.form.validate()){
+                return
+            }
+
+            const params = {cancel: false, continue: vm.$saving}
+            vm.$emit('beforSave', params)
+
+            if (!params.cancel) {
+                vm.$saving()
+            } 
+        },
+
+        deleteDoc() {
+            const vm = this
+            vm.inProgress = true
+            vm.$store.dispatch(`deleteDoc`, {id: vm.id, name: vm.lcName, callBack: err => {
                 if (err) {
                     vm.error_msg = err
                     console.error(err)
@@ -125,34 +136,34 @@ export default {
                 vm.inProgress = false
             }})
 
-            vm.$emit('delete')
+            vm.$emit('afterDelete')
         },          
     },
     created() {
-        const id = this.$route.params.id
-
+        const vm = this
+        const id = vm.$route.params.id
         if (id) {
-            this.inProgress = true
-            this.$store.dispatch(`getDoc`, {id: id, name: this.lcName, callBack: (payload, err) => {
+            vm.inProgress = true
+            vm.$store.dispatch(`getDoc`, {id: id, name: vm.lcName, callBack: (payload, err) => {
                 if (!err){
-                    this.data = Object.assign(this.data, payload)
-                    this.id = id
+                    vm.data = Object.assign(vm.data, payload)
+                    vm.id = id
+                    vm.data.id = id
                 } else {
-                    this.error_msg = err
+                    vm.error_msg = err
                     console.error(err)                    
                 }
 
-                this.inProgress = false
-                this.isOpening = false
+                vm.inProgress = false
+                vm.isOpening = false
 
+                vm.$emit('dataLoaded', vm.data)
             }})
             
         } else {
-            this.isOpening = false
+            vm.isOpening = false
         }
 
-
-        this.$emit('loaded')
     },
   
     computed: {

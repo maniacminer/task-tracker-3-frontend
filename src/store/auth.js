@@ -26,29 +26,32 @@ const mutations = {
 }
 
 const actions = {
-    signIn: ({ commit, state }, params) => {
-        const promise = state.$auth.signInWithEmailAndPassword(params.login, params.pass)
-        
-        promise
-            .then((user) => {
-                commit('user', user)
-                params.callBack()
-            })
-            .catch(err => {
-                params.callBack(err)
-            });       
-      },
-      signOut: ({ state }, params) => {
-        state.$auth.signOut()
-        params.callBack()
-      },
-      bindAuth: ({ commit }, auth) => {
-        auth.onAuthStateChanged(user => {
-           commit('user', user)
-        })
-        commit('auth', auth)
-  
-      }    
+  signIn: ({ commit, state }, params) => {
+      const promise = state.$auth.signInWithEmailAndPassword(params.login, params.pass)
+      
+      promise
+          .then((user) => {
+              commit('user', user)
+              params.callBack()
+          })
+          .catch(err => {
+              params.callBack(err)
+          })     
+  },
+  signUp: ({ state }, params) => {
+    return state.$auth.createUserWithEmailAndPassword(params.login, params.pass)
+  },
+  signOut: ({ state }, params) => {
+    state.$auth.signOut()
+    params.callBack()
+  },
+  bindAuth: ({ commit }, auth) => {
+    auth.onAuthStateChanged(user => {
+        commit('user', user)
+    })
+    commit('auth', auth)
+
+  }    
 }
 
 export default {

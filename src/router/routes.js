@@ -35,11 +35,11 @@ export default [
       }        
     },
     {
-      path: '/signup',
-      name: 'signup',
-      component: () => import('@/views/Signup.vue'),
+      path: '/user-new',
+      name: 'user-new',
+      component: () => import('@/views/User.vue'),
       presentetion: {
-        description: 'Регистрация',
+        description: 'Новый пользователь',
         navbar: Navbar.AUTH,
         icon: 'how_to_reg',
         auth: Auth.UNAUTH
@@ -109,7 +109,11 @@ export default [
           navbar: Navbar.NAV,
           icon: 'people',
       },
-    },      
+    },  
+    {
+      path: '/user/:id',
+      component: () => import('@/views/User.vue'),
+    },           
     {
       path: '/about',
       name: 'about',
