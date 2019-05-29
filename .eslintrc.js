@@ -7,6 +7,9 @@ module.exports = {
   // ],
   rules: {
     "no-console": "off",
-    parser: "babel-eslint"
+    // parser: "babel-eslint",
+    parserOptions: {
+      parser: "babel-eslint"
+    }
   }
 }
