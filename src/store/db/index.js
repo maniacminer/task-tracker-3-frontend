@@ -42,32 +42,25 @@ let actions = {
         params.callBack(null, err)
       })
   },
-  saveDoc: ({ state }, params) => {
+
+  saveDoc({ state }, params) {
     const payload = params.payload
-    const collectionName = params.payload._name
+    const collectionName = payload._name
     let db = {}
     params.payload._persistent.forEach(f => (db[f] = params.payload[f]))
 
-    let promise = null
-
     if (!params.id) {
-      promise = state.$db.collection(collectionName).add(db)
+      // новый
+      return state.$db.collection(collectionName).add(db)
     } else {
-      // all fields, include not changed TODO: fix
-      promise = state.$db
+      // запись существующего
+      return state.$db
         .collection(collectionName)
         .doc(params.id)
         .set(db)
     }
-
-    promise
-      .then(docRef => {
-        params.callBack(docRef)
-      })
-      .catch(err => {
-        params.callBack(null, err)
-      })
   },
+
   deleteDoc({ state }, params) {
     console.log(params)
     if (!params.id) {

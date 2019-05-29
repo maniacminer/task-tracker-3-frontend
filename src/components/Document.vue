@@ -80,6 +80,7 @@
 </template>
 
 <script>
+import { Promise } from "q";
 export default {
   data() {
     return {
@@ -91,7 +92,10 @@ export default {
     };
   },
   props: {
-    data: null
+    // данные из реализаций
+    data: null,
+    // делегаты из реализаций:
+    beforeSave: null
   },
   methods: {
     close() {
@@ -99,42 +103,48 @@ export default {
       this.$emit("close");
     },
 
-    $saving() {
-      const vm = this;
-      vm.inProgress = true;
-      vm.$store.dispatch("saveDoc", {
-        payload: vm.data,
-        id: vm.id,
-        callBack: (docRef, err) => {
-          if (err) {
-            vm.error_msg = err;
-            console.error(err);
-          }
-
-          if (docRef) {
-            vm.id = docRef.id;
-            vm.data.id = docRef.id;
-            vm.$router.push(`/${vm.lcName}/${docRef.id}`);
-          }
-          vm.inProgress = false;
-
-          vm.$emit("afterSave");
-        }
-      });
-    },
-
     save() {
       const vm = this;
+      // валидируем форму
       if (!vm.$refs.form.validate()) {
         return;
       }
 
-      const params = { cancel: false, continue: vm.$saving };
-      vm.$emit("beforSave", params);
-
-      if (!params.cancel) {
-        vm.$saving();
-      }
+      Promise.resolve()
+        .then(_ => {
+          // установка прогрессбара в активное состояние и обертка в промис
+          return new Promise(resolve => {
+            vm.inProgress = true;
+            resolve();
+          });
+        })
+        .then(_ => {
+          // выполнение действий перед сохранением потомка
+          return vm.beforeSaveChild;
+        })
+        .then(_ => {
+          return vm.$store.dispatch("saveDoc", {
+            payload: vm.data,
+            id: vm.id
+          });
+        })
+        .then(docRef => {
+          if (docRef) {
+            vm.id = docRef.id;
+            vm.data.id = docRef.id;
+          }
+          // TODO: возможно обновить без перехода?
+          vm.$router.push(`/${vm.lcName}/${vm.id}`);
+          vm.$emit("saveCompleted");
+          vm.error_msg = null;
+        })
+        .catch(err => {
+          vm.error_msg = err;
+          console.error(err);
+        })
+        .finally(() => {
+          vm.inProgress = false;
+        });
     },
 
     deleteDoc() {
@@ -187,6 +197,16 @@ export default {
   },
 
   computed: {
+    beforeSaveChild() {
+      if (!this.beforeSave) {
+        // не подключен обработчик
+        return Promise.resolve();
+      } else {
+        // распаковка промиса
+        return this.beforeSave();
+      }
+    },
+
     mdName() {
       const str = this.data._name;
       return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();

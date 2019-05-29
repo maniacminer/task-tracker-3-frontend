@@ -1,5 +1,5 @@
 <template>
-  <app-doc :data="$data" @beforSave="beforSave">
+  <app-doc :data="$data" :beforeSave="beforeSave">
     <v-text-field
       v-model="email"
       :disabled="uid !== null"
@@ -20,7 +20,6 @@
       :type="showPassword ? 'text' : 'password'"
       @click:append="showPassword = !showPassword"
     ></v-text-field>
-    <v-alert :value="error_msg" type="error" class outline>{{ error_msg }}</v-alert>
     <v-text-field
       v-model="name"
       name="name"
@@ -47,6 +46,7 @@
 
 <script>
 import validationMixins from "@/validationMixins";
+import { Promise } from "q";
 
 export default {
   mixins: [validationMixins],
@@ -63,26 +63,27 @@ export default {
       company: "",
       uid: null,
 
-      showPassword: false,
-      error_msg: ""
+      showPassword: false
     };
   },
   methods: {
-    beforSave(params) {
+    beforeSave() {
       const vm = this;
-      if (!vm.uid) {
-        params.cancel = true;
-        vm.$store
-          .dispatch(`signUp`, { login: vm.email, pass: vm.password })
-          .then(credentials => {
-            vm.uid = credentials.user.uid;
-            params.continue();
-          })
-          .catch(err => {
-            vm.error_msg = err.message;
-          });
-      }
+
+      // пользователь есть
+      if (vm.uid) return Promise.resolve();
+
+      // пользователя еше не существует
+      return vm.$store
+        .dispatch(`signUp`, {
+          login: vm.email,
+          pass: vm.password
+        })
+        .then(credentials => {
+          vm.uid = credentials.user.uid;
+        });
     },
+
     emailChanged(val) {
       // console.log(val);
     }
