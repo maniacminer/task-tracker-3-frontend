@@ -13,12 +13,8 @@
                 <v-spacer></v-spacer>
                 <slot name="toolbar"></slot>
 
+                <app-action icon="delete" @action="deleteDialog = true"/>
                 <v-dialog v-model="deleteDialog" width="500px">
-                  <template v-slot:activator="{ on }">
-                    <v-btn fab flat v-on="on" :disabled="isDeletable">
-                      <v-icon>delete</v-icon>
-                    </v-btn>
-                  </template>
                   <v-card>
                     <v-card-title>
                       <span class="headline">Удалить документ?</span>
@@ -31,42 +27,12 @@
                   </v-card>
                 </v-dialog>
 
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on }">
-                    <v-btn fab flat @click="save(false)" v-on="on">
-                      <v-icon>save</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>Сохранить</span>
-                </v-tooltip>
-
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on }">
-                    <v-btn fab flat @click="save(true)" v-on="on">
-                      <v-icon>save_alt</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>Сохранить и выйти</span>
-                </v-tooltip>
-
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on }">
-                    <v-btn disabled fab flat v-on="on">
-                      <v-icon>bookmark_border</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>Добавить закладку</span>
-                </v-tooltip>
-
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on }">
-                    <v-btn fab flat @click="close" v-on="on">
-                      <v-icon>clear</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>Вернуться в журнал</span>
-                </v-tooltip>
+                <app-action icon="save" tooltip="Сохранить" @action="save(false)"/>
+                <app-action icon="save_alt" tooltip="Сохранить и выйти" @action="save(true)"/>
+                <app-action disabled icon="bookmark_border" tooltip="Добавить закладку"/>
+                <app-action icon="clear" tooltip="Вернуться в журнал" @action="close"/>
               </v-toolbar>
+
               <v-progress-linear v-show="inProgress" v-slot:progress color="grey" indeterminate/>
               <v-card-text>
                 <slot v-if="!isOpening" name="default"></slot>
@@ -90,7 +56,12 @@
 
 <script>
 import { Promise } from "q";
+import Action from "@/components/Action.vue";
+
 export default {
+  components: {
+    "app-action": Action
+  },
   data() {
     return {
       inProgress: false,
