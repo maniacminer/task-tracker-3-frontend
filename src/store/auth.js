@@ -41,7 +41,7 @@ const actions = {
         params.callBack(err)
       })
   },
-  signUp: ({ state }, params) => {
+  signUp({ state }, params) {
     return state.$auth.createUserWithEmailAndPassword(params.login, params.pass)
   },
   signOut: ({ state }, params) => {
