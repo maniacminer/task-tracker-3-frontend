@@ -1,14 +1,11 @@
 <template>
-  <app-journal :headers="headers" :metadata="metadata"></app-journal>
+  <app-journal :headers="headers" :metadata="{name: 'project'}"></app-journal>
 </template>
 
 <script>
 export default {
   data() {
     return {
-      metadata: {
-        name: "project"
-      },
       headers: [
         { text: "Идентификатор", value: "pid" },
         { text: "Проект", value: "title" },

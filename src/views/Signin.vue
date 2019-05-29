@@ -58,18 +58,18 @@ export default {
     login() {
       const vm = this;
 
-      this.$store.dispatch("signIn", {
-        login: this.email,
-        pass: this.password,
-        callBack: err => {
-          if (!err) {
-            this.$router.push({ name: "home" });
-          } else {
-            vm.error_msg = err.message;
-            vm.error = true;
-          }
-        }
-      });
+      vm.$store
+        .dispatch("signIn", {
+          login: vm.email,
+          pass: vm.password
+        })
+        .then(_ => {
+          vm.$router.push({ name: "home" });
+        })
+        .catch(err => {
+          vm.error_msg = err.message;
+          vm.error = true;
+        });
     }
   }
 };

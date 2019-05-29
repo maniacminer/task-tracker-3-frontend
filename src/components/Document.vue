@@ -33,11 +33,20 @@
 
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on }">
-                    <v-btn fab flat @click="save" v-on="on">
+                    <v-btn fab flat @click="save(false)" v-on="on">
                       <v-icon>save</v-icon>
                     </v-btn>
                   </template>
                   <span>Сохранить</span>
+                </v-tooltip>
+
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on }">
+                    <v-btn fab flat @click="save(true)" v-on="on">
+                      <v-icon>save_alt</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Сохранить и выйти</span>
                 </v-tooltip>
 
                 <v-tooltip bottom>
@@ -97,26 +106,26 @@ export default {
     // делегаты из реализаций:
     beforeSave: null
   },
+
   methods: {
     close() {
       this.$router.push({ name: this.lcName });
       this.$emit("close");
     },
 
-    save() {
+    save(exit) {
       const vm = this;
-      // валидируем форму
-      if (!vm.$refs.form.validate()) {
-        return;
-      }
 
       Promise.resolve()
         .then(_ => {
-          // установка прогрессбара в активное состояние и обертка в промис
-          return new Promise(resolve => {
-            vm.inProgress = true;
-            resolve();
-          });
+          // валидируем форму
+          if (!vm.$refs.form.validate()) {
+            console.log("!");
+            return Promise.reject(new Error("Неверно заполнены поля"));
+          }
+
+          // установка прогрессбара в активное состояние
+          vm.inProgress = true;
         })
         .then(_ => {
           // выполнение действий перед сохранением потомка
@@ -132,68 +141,90 @@ export default {
           if (docRef) {
             vm.id = docRef.id;
             vm.data.id = docRef.id;
+            // TODO: возможно обновить без перехода?
+            vm.$router.push(`/${vm.lcName}/${vm.id}`);
           }
-          // TODO: возможно обновить без перехода?
-          vm.$router.push(`/${vm.lcName}/${vm.id}`);
           vm.$emit("saveCompleted");
           vm.error_msg = null;
+          if (exit) vm.$router.push(`/${vm.lcName}`);
         })
         .catch(err => {
           vm.error_msg = err;
           console.error(err);
         })
-        .finally(() => {
+        .finally(_ => {
           vm.inProgress = false;
         });
     },
 
     deleteDoc() {
       const vm = this;
-      vm.inProgress = true;
-      vm.$store.dispatch(`deleteDoc`, {
-        id: vm.id,
-        name: vm.lcName,
-        callBack: err => {
-          if (err) {
-            vm.error_msg = err;
-            console.error(err);
-          } else {
-            vm.$router.push({ name: vm.lcName });
-          }
-          vm.inProgress = false;
-        }
-      });
 
-      vm.$emit("afterDelete");
+      Promise.resolve()
+        .then(_ => {
+          // установка прогрессбара в активное состояние
+          vm.inProgress = true;
+        })
+        .then(_ => {
+          return vm.$store.dispatch("deleteDoc", {
+            id: vm.id,
+            name: vm.lcName
+          });
+        })
+        .then(_ => {
+          vm.$router.push({ name: vm.lcName });
+          vm.$emit("deleteCompleted");
+        })
+        .catch(err => {
+          vm.error_msg = err;
+          console.error(err);
+        })
+        .finally(_ => {
+          vm.inProgress = false;
+        });
     }
   },
   created() {
     const vm = this;
     const id = vm.$route.params.id;
-    if (id) {
-      vm.inProgress = true;
-      vm.$store.dispatch(`getDoc`, {
-        id: id,
-        name: vm.lcName,
-        callBack: (payload, err) => {
-          if (!err) {
-            vm.data = Object.assign(vm.data, payload);
-            vm.id = id;
-            vm.data.id = id;
-          } else {
-            vm.error_msg = err;
-            console.error(err);
-          }
 
-          vm.inProgress = false;
-          vm.isOpening = false;
-
-          vm.$emit("dataLoaded", vm.data);
-        }
-      });
-    } else {
+    if (!id) {
       vm.isOpening = false;
+      return;
     }
+
+    Promise.resolve()
+      .then(_ => {
+        // установка прогрессбара в активное состояние
+        vm.inProgress = true;
+      })
+      .then(_ => {
+        return vm.$store.dispatch("getDoc", {
+          name: vm.lcName,
+          id: id
+        });
+      })
+      .then(doc => {
+        if (!doc.exists)
+          return Promise.reject(
+            `no document of type "${vm.lcName}" with id "${id}"`
+          );
+
+        vm.data = Object.assign(vm.data, doc.data());
+        vm.id = id;
+        vm.data.id = id;
+
+        vm.isOpening = false;
+
+        vm.$emit("dataLoadCompleted", vm.data);
+      })
+      .catch(err => {
+        vm.error_msg = err;
+        console.error(err);
+      })
+      .finally(_ => {
+        vm.inProgress = false;
+      });
   },
 
   computed: {

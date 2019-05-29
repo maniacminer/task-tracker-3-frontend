@@ -27,20 +27,13 @@ const mutations = {
 
 const actions = {
   signIn: ({ commit, state }, params) => {
-    const promise = state.$auth.signInWithEmailAndPassword(
-      params.login,
-      params.pass
-    )
-
-    promise
+    return state.$auth
+      .signInWithEmailAndPassword(params.login, params.pass)
       .then(user => {
         commit("user", user)
-        params.callBack()
-      })
-      .catch(err => {
-        params.callBack(err)
       })
   },
+
   signUp({ state }, params) {
     return state.$auth.createUserWithEmailAndPassword(params.login, params.pass)
   },

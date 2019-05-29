@@ -24,57 +24,43 @@ let actions = {
   bindDb: ({ commit }, db) => {
     commit("db", db)
   },
+
   getDoc: ({ state }, params) => {
-    const promise = state.$db
+    console.log(params)
+    return state.$db
       .collection(params.name)
       .doc(params.id)
       .get()
-
-    promise
-      .then(doc => {
-        if (doc.exists) {
-          params.callBack(doc.data())
-        } else {
-          params.callBack(null, "no document") // TODO: error
-        }
-      })
-      .catch(err => {
-        params.callBack(null, err)
-      })
   },
 
   saveDoc({ state }, params) {
     const payload = params.payload
-    const collectionName = payload._name
     let db = {}
     params.payload._persistent.forEach(f => (db[f] = params.payload[f]))
 
     if (!params.id) {
       // новый
-      return state.$db.collection(collectionName).add(db)
+      return state.$db.collection(payload._name).add(db)
     } else {
       // запись существующего
       return state.$db
-        .collection(collectionName)
+        .collection(payload._name)
         .doc(params.id)
         .set(db)
     }
   },
 
   deleteDoc({ state }, params) {
-    console.log(params)
     if (!params.id) {
-      params.callBack("no document, id is empty")
-      return
+      return Promise.reject(new Error("no document, id is empty"))
     }
 
-    state.$db
+    return state.$db
       .collection(params.name)
       .doc(params.id)
       .delete()
-      .then(() => params.callBack())
-      .catch(err => params.callBack(err))
   },
+
   getCollection({ state }, params) {
     let collection = state.$db.collection(params.name)
 
