@@ -50,16 +50,6 @@
       </v-flex>
     </v-layout>
 
-    <!-- <v-tooltip top>
-            <template v-slot:activator="{ on }">
-                <v-btn flat @click="saveAndClose" v-on="on" class="font-weight-regular secondary black--text">
-                    <v-icon left>save</v-icon>
-                    <v-icon>clear</v-icon>
-                </v-btn>
-            </template>
-            <span>Сохранить и вернуться в журнал задач</span>
-    </v-tooltip>-->
-
     <template v-slot:actions>
       <v-layout ml-2>
         <v-checkbox color="grey darken-2" v-model="completed" label="Закрыта"/>
@@ -126,28 +116,6 @@ export default {
         this.responsibleList = [data.responsible];
       }
     }
-    // saveAndClose() {
-    //     if (!this.$refs.form.validate()){
-    //         return
-    //     }
-    //     this.inProgress = true
-    //     const vm = this
-    //     this.$store.dispatch('saveTask', {task: this.$data, callBack: (docRef, err) => {
-
-    //         if (docRef) {
-    //             // vm.id = docRef.id
-    //             this.$router.push({name: 'tasks'})
-    //         }
-
-    //         this.inProgress = false
-
-    //         if (err) {
-    //             console.error(err)
-    //         } else {
-    //             this.$router.push({name: 'tasks'})
-    //         }
-    //     }})
-    // }
   },
   computed: {
     getUserList() {
