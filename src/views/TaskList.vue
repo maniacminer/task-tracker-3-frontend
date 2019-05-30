@@ -12,7 +12,7 @@
       <v-btn
         flat
         class="font-weight-regular secondary black--text"
-        :to="{name: 'task-new'}"
+        :to="{ name: 'task-new' }"
       >Новая задача</v-btn>
     </template>
   </app-journal>
@@ -35,6 +35,25 @@ export default {
     };
   },
 
+  computed: {
+    filters() {
+      let filters = [];
+      if (!this.showClosed) {
+        filters.push({ field: "completed", eq: "==", value: false });
+      }
+      return filters;
+    }
+  },
+
+  watch: {
+    showClosed() {
+      this.$router.push({
+        name: this.metadata.name,
+        query: { showClosed: this.showClosed }
+      });
+    }
+  },
+
   methods: {
     getRowClasses(item, applyCompleted = true) {
       let classes = {
@@ -48,32 +67,12 @@ export default {
       }
 
       return classes;
-    },
-    rowProcessor(row, data) {}
-  },
-
-  watch: {
-    showClosed() {
-      this.$router.push({
-        name: this.metadata.name,
-        query: { showClosed: this.showClosed }
-      });
-    }
-  },
-
-  computed: {
-    filters() {
-      let filters = [];
-      if (!this.showClosed) {
-        filters.push({ field: "completed", eq: "==", value: false });
-      }
-      return filters;
     }
   }
 };
 </script>
 
-<style >
+<style>
 thead {
   background-color: #f5f5f5;
 }

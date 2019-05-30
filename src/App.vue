@@ -1,3 +1,4 @@
+<!-- eslint-disable-next-lin -->
 <template>
   <v-app id="inspire">
     <v-navigation-drawer v-model="drawerUser" fixed right clipped app>

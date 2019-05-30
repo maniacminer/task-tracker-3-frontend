@@ -3,9 +3,11 @@
     <v-container>
       <v-card>
         <div>
-          <v-btn @click="click">click me</v-btn>
-          <button id="new">another button</button>
+          <button id="button" @click="click">click me</button>
+          <!-- <button>another button</button> -->
+          <v-card id="dropdown" v-if="show" class="fixed">asdfasdf</v-card>
         </div>
+        <span>some text</span>
       </v-card>
     </v-container>
   </v-content>
@@ -14,20 +16,38 @@
 <script>
 export default {
   data() {
-    return {};
+    return {
+      show: false
+    };
   },
+
+  created() {
+    const vm = this;
+    window.addEventListener("mouseup", e => {
+      const btn = document.querySelector("#button");
+      if (e.target === btn) {
+        return;
+      }
+
+      const box = document.querySelector("#dropdown");
+      if (box && e.target != box) {
+        vm.show = false;
+      }
+    });
+  },
+
   methods: {
     right() {
-      console.log("right");
       return true;
     },
 
     left() {
-      console.log("left");
       return true;
     },
 
     click(e) {
+      // console.log(e);
+      this.show = !this.show;
       // const Object1 = function(initVal) {
       //   this.initVal = initVal;
       // };
@@ -49,15 +69,29 @@ export default {
       // console.log({}.__proto__);
       // console.log({}.prototype);
 
-      const cat = { breed: "serval" };
-      const vasya = Object.create(cat);
+      // const cat = { breed: "serval" };
+      // const vasya = Object.create(cat);
 
-      vasya.name = "Vasya";
+      // vasya.name = "Vasya";
 
-      console.log(vasya);
+      // console.log(vasya);
     }
   }
 };
 </script>
 
-<style></style>
+<style scoped>
+.fixed {
+  position: absolute;
+  height: 460px;
+  width: 233px;
+  display: block;
+  box-shadow: 1 0 41px rgba(0, 0, 0, 0.5); /* Параметры тени */
+  /* left: 339; */
+  /* top: 94; */
+  z-index: 4;
+}
+/* @import "https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"; */
+/* @import "node_modules/path/to/your/cssfileName"; */
+/* @import "../../node_modules/materialize-css/dist/css/materialize.css"; */
+</style>

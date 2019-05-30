@@ -1,41 +1,45 @@
 <template>
   <v-content>
     <v-container>
-      <v-card>
-        <v-data-table
-          :headers="headers"
-          :items="items"
-          :loading="loading"
-          class="elevation-1"
-          no-data-text="Тут пока ничего нет (или у вас нет прав)"
-          :rows-per-page-items="rowsPerPageItems"
-          :pagination.sync="pagination"
-          rows-per-page-text="Строк на странице"
-        >
-          <v-progress-linear v-slot:progress indeterminate></v-progress-linear>
-          <template v-slot:items="row">
-            <tr @click="editItem(row.item)">
-              <slot name="main" v-bind="row"></slot>
-              <!-- <slot>
-              </slot>-->
-              <template v-if="!isTemplateForRowProvided">
-                <td v-for="c in headers" v-bind:key="c.value">{{ row.item[c.value] }}</td>
+      <v-layout>
+        <v-flex>
+          <v-card>
+            <v-data-table
+              :headers="headers"
+              :items="items"
+              :loading="loading"
+              class="elevation-1"
+              no-data-text="Тут пока ничего нет (или у вас нет прав)"
+              :rows-per-page-items="rowsPerPageItems"
+              :pagination.sync="pagination"
+              rows-per-page-text="Строк на странице"
+            >
+              <v-progress-linear v-slot:progress indeterminate></v-progress-linear>
+              <template v-slot:items="row">
+                <tr @click="editItem(row.item)">
+                  <slot name="main" v-bind="row"></slot>
+                  <!-- <slot>
+                  </slot>-->
+                  <template v-if="!isTemplateForRowProvided">
+                    <td v-for="c in headers" v-bind:key="c.value">{{ row.item[c.value] }}</td>
+                  </template>
+                </tr>
               </template>
-            </tr>
-          </template>
-        </v-data-table>
-        <v-card-actions>
-          <slot name="actions"></slot>
-          <template v-if="!isTemplateForActionsProvided">
-            <v-spacer></v-spacer>
-            <v-btn
-              flat
-              class="font-weight-regular secondary black--text"
-              :to="{name: `${metadata.name}-new`}"
-            >Новый</v-btn>
-          </template>
-        </v-card-actions>
-      </v-card>
+            </v-data-table>
+            <v-card-actions>
+              <slot name="actions"></slot>
+              <template v-if="!isTemplateForActionsProvided">
+                <v-spacer></v-spacer>
+                <v-btn
+                  flat
+                  class="font-weight-regular secondary black--text"
+                  :to="{name: `${metadata.name}-new`}"
+                >Новый</v-btn>
+              </template>
+            </v-card-actions>
+          </v-card>
+        </v-flex>
+      </v-layout>
     </v-container>
   </v-content>
 </template>
@@ -68,6 +72,7 @@ export default {
     editItem(item) {
       this.$router.push(`/${this.metadata.name}/${item.id}`);
     },
+
     read() {
       const vm = this;
       vm.$store
@@ -95,11 +100,13 @@ export default {
         });
     }
   },
+
   watch: {
     filters() {
       this.read();
     }
   },
+
   computed: {
     isTemplateForRowProvided() {
       return this.$scopedSlots["main"] !== undefined;

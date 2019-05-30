@@ -16,4 +16,27 @@ var firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig)
 
+// Ситуация с Persistence на 2019-05-28:
+//Important: For the web, offline persistence is an experimental
+//  feature that is supported only by the Chrome, Safari, and Firefox web browsers.
+//  Also, if a user opens multiple browser tabs that point to the same
+//  Cloud Firestore database,   and offline persistence is enabled,
+// Cloud Firestore will work correctly only   in the first tab.
+
+// firebase
+//   .firestore()
+//   .enablePersistence()
+//   .catch(function(err) {
+//     console.error(err)
+//     if (err.code == "failed-precondition") {
+//       // Multiple tabs open, persistence can only be enabled
+//       // in one tab at a a time.
+//       // ...
+//     } else if (err.code == "unimplemented") {
+//       // The current browser does not support all of the
+//       // features required to enable persistence
+//       // ...
+//     }
+//   })
+
 export default firebase

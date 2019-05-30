@@ -1,11 +1,11 @@
 module.exports = {
   extends: [
     // "plugin:vue/recommended",
-    "eslint:recommended",
-    "prettier/vue",
-    "plugin:prettier/recommended"
+    // "plugin:vue/base",
+    "eslint:recommended"
+    // "prettier/vue",
+    // "plugin:prettier/recommended"
   ],
-  parser: "babel-eslint",
   rules: {
     "no-console": "off",
     parserOptions: {
@@ -14,5 +14,6 @@ module.exports = {
         sourceType: "module"
       }
     }
-  }
+  },
+  globals: { Promise: true, console: true }
 }
